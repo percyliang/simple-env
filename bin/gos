@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+  # list the current screens
+  exec screen -ls
+else
+  export SCREEN=$1
+  # check if screen with name exists
+  if [ -z "`screen -ls $1 | grep 'No Sockets'`" ]; then
+    exec screen -d -a -A -r $1 # re-attach
+  else
+    exec screen -S $1 # open new
+  fi
+fi
