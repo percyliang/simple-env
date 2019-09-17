@@ -1,6 +1,3 @@
-[user]
-  name = Percy Liang
-  email = percyliang@gmail.com
 [credential]
   helper = cache --timeout=3600000
 [push]
