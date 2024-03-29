@@ -88,25 +88,9 @@ augroup encrypted
     \ silent u |
     \ setlocal nobin
 augroup END
-" Primitive linking system
-" Not really used
-map qly :call <SID>copyLink()<CR>
-map qlp :call <SID>pasteLink()<CR>
-function! <SID>copyLink()
-  let line = getline(".")
-  let m = matchstr(line, '%&-\d\d*-')
-  if m != ''
-    let id = strpart(m, 3, strlen(m)-4)
-  else
-    let id = localtime()
-    call setline(".", line.' %&-'.id.'-')
-  end
-  let @l = id " Copy
-  echo id
-endfunction
-function! <SID>pasteLink()
-  let line = getline(".")
-  let m = matchstr(line, '^\t*')
-  echo strlen(m)
-  call append(".", m.'%*-'.@l.'-')
+
+map qx :call ExecCurrentItem()<CR>
+function! ExecCurrentItem()
+  let command="!cd `dirname %` && (".escape(substitute(getline(line(".")), '#.*$', '', ''), "%#").")"
+  exec command
 endfunction
