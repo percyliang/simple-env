@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 """
 Writes all the files into a list.
@@ -7,17 +7,21 @@ Writes all the files into a list.
 import os, sys, re, fnmatch
 
 allow_patterns = [
-    '*.cc', '*.h',
+    '*.cc', '*.cpp', '*.h',
     "*.java", "*.scala",
     "*.rb", "*.py",
     "*.go",
+    "*.cu",
+    "*.vue",
+    "*.sh",
     "*.jsx", "*.js", "*.ts", "*.tsx",
     "*.html", "*.hbs",
-    "*.css", "*.less",
+    "*.css", "*.scss", "*.less",
     "*.md",
     "*.yml",
     "*.tex",
     "*.conf",
+    "*.yaml",
     #"*.json",
     "package.json",
     'run', 'Makefile', 'Dockerfile*', 'README',
@@ -26,7 +30,7 @@ allow_patterns = [
 def read_gitignore():
     """Return list of ignore patterns."""
     path = '.gitignore'
-    patterns = []
+    patterns = ['.git']
     if os.path.exists(path):
         for line in open(path):
             line = re.sub('#.*$', '', line)
@@ -44,14 +48,14 @@ def find_all_files(path, out):
     for filename in sorted(os.listdir(path)):
         if matches(filename, disallow_patterns):
             continue
-        if any(path.endswith(pattern) for pattern in disallow_patterns):
-            continue
         subpath = os.path.join(path, filename)
+        if any(subpath.endswith(pattern) for pattern in disallow_patterns if pattern.startswith('/')):
+            continue
         if os.path.isdir(subpath):
             subpaths.append(subpath)
         else:
             if matches(filename, allow_patterns):
-                print >>out, subpath
+                print(subpath, file=out)
     for subpath in subpaths:
         find_all_files(subpath, out)
 
@@ -60,7 +64,6 @@ def find_all_files(path, out):
 disallow_patterns = read_gitignore()
 
 path = 'nav'
-#if not os.path.exists(path):
 with open(path, 'w') as out:
     find_all_files('.', out)
 os.system('ctags -L {}'.format(path))
